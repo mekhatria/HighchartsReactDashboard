@@ -1,25 +1,40 @@
-import React, { Component } from 'react';
+import React, { Component } from "react";
 
-import Highcharts from 'highcharts';
-import HighchartsReact from 'highcharts-react-official';
+import Highcharts from "highcharts";
+import HighchartsReact from "highcharts-react-official";
 
 class Chart extends Component {
   state = {
     chartData: {
       chart: {
-        type: 'pie'
-        //backgroundColor: '#FCFFC5'
+        type: "pie",
+        marginBottom: 100
       },
       title: {
-        text: this.props.titleNanme
+        text: this.props.titleName
       },
-      tooltip: this.props.tooltip || {},
-      /*tooltip: {
-        pointFormat: '<b>{point.y} thousand megawatthours</b>'
-      },*/
-
-      plotOptions: this.props.plotOptions,
-      series: this.props.data
+      subtitle: {
+        text:
+          (
+            this.props.data.reduce(
+              (accumulator, obj) => accumulator + obj.y,
+              0
+            ) / 1000000
+          ).toFixed(2) + " Twh",
+        floating: true,
+        style: {
+          fontSize: 14,
+          fontWeight: "bold",
+          color: "#000000"
+        },
+        y: 170
+      },
+      series: [
+        {
+          data: this.props.data
+        }
+      ],
+      ...this.props.userConfig
     }
   };
 
@@ -27,7 +42,21 @@ class Chart extends Component {
     if (this.props.data !== prevProps.data) {
       this.setState({
         chartData: {
-          series: this.props.data
+          ...this.state.chartData,
+          subtitle: {
+            text:
+              (
+                this.props.data.reduce(
+                  (accumulator, obj) => accumulator + obj.y,
+                  0
+                ) / 1000000
+              ).toFixed(2) + " Twh"
+          },
+          series: [
+            {
+              data: this.props.data
+            }
+          ]
         }
       });
     }
